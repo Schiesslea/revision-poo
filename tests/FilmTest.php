@@ -1,19 +1,39 @@
 <?php
-require_once '../src/Film.php';
 
-// Instancier la classe Film
+use PHPUnit\Framework\TestCase;
 
-$film1 = new Film("Cars", "Pixar", DateTime::createFromFormat("d/m/Y", "12/03/2022"));
+class FilmTest extends TestCase {
+    private \App\Film $film;
 
-echo $film1->getTitre();
-echo PHP_EOL;
-echo $film1->getAnciennete();
-$film1->ajouterActeur(new Acteur("Clement", "Dasilva"));
-$film1->ajouterActeur(new Acteur("Maxime", "Sermmet"));
-echo PHP_EOL;
-print_r($film1->getActeurs());
-// Afficher le nom des acteurs
-foreach ($film1->getActeurs() as $acteur) {
-    echo $acteur->getNom();
-    echo PHP_EOL;
+
+    protected function setUp() : void
+    {
+        // Cette méthode est appelé lors de l'exécution de chaque test
+        parent::setUp();
+        $this->film = new \App\Film("Cars", "Jean", new DateTime("2022-03-08"));
+    }
+
+    #[PHPUnit\Framework\Attributes\Test]
+    public function ajouterActeur_ActeurExistant_Exception() {
+        // Vérification de l'exception
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage("L'acteur a déjà été ajouté");
+        // Arrange
+        $acteur = new \App\Acteur("Jean", "Dupond");
+        $this->film->ajouterActeur($acteur);
+        // Act
+        $this->film->ajouterActeur($acteur);
+        // Assert
+    }
+
+    #[PHPUnit\Framework\Attributes\Test]
+    public function getAnciennete_DateEgale_True() {
+        // Arrange
+        $dateDiff = 2;
+        // Act
+        $resultat = $this->film->getAnciennete();
+        // Assert
+        $this->assertEquals($dateDiff, $resultat);
+    }
 }
+
